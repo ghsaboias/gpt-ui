@@ -1,0 +1,45 @@
+p,
+h3 {
+  margin: 0;
+}
+
+.small-text {
+  font-size: small;
+}
+
+.medium-text {
+  font-size: medium;
+}
+
+.card-container {
+  margin-top: 1rem;
+}
+
+.card {
+  border: 1px solid black;
+  border-radius: 5px;
+  margin: 10px 0px;
+  padding: 10px;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 10px;
+}
+
+.timestamp {
+  font-size: small;
+  color: gray;
+}
+
+.question-id {
+  font-size: large;
+  font-weight: 600;
+}
+
+.prompt-info {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}

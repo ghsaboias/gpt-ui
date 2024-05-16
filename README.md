@@ -1,70 +1,45 @@
-# Getting Started with Create React App
+# Streaming Chat Completion with Flask and React
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This project demonstrates how to create a chat interface using OpenAI's GPT API, with a React frontend and Flask backend. The backend streams completions from the GPT API, and the frontend displays these in a chat interface.
 
-## Available Scripts
+## Project Structure
 
-In the project directory, you can run:
+This project contains two main directories:
 
-### `npm start`
+1. `frontend`: This contains the React application that renders the chat interface.
+2. `server.py`: This is the Flask server file that handles the backend operations.
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+### Frontend
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+The frontend is structured as follows:
 
-### `npm test`
+- `public`: This directory contains static files and the `index.html` file where the React app is hooked.
+- `src`: This directory contains all the React JavaScript files, components, and CSS files.
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+You can run the following commands in this directory:
 
-### `npm run build`
+- `npm start`: Runs the app in development mode.
+- `npm test`: Runs the test watcher in an interactive mode.
+- `npm run build`: Builds the app for production to the `build` folder.
+- `npm run eject`: Removes this tool and copies build dependencies, configuration files, and scripts into the app directory.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### Backend
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+The backend server is a Flask application that communicates with the OpenAI API. It serves two main routes:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- `/`: This route simply returns a "Hello World!" message.
+- `/api/prompt`: This is the main API route that takes a `prompt` as a POST request and streams the completions from the GPT API.
 
-### `npm run eject`
+The server runs on port 5000, and CORS is handled globally.
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+## Setup
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+To set up this project, follow these steps:
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+1. Clone the repository to your local machine.
+2. Install the necessary packages for both the frontend and backend.
+3. Replace `YOUR_API_KEY` in `server.py` with your actual OpenAI API key.
+4. Start the Flask server by running `python server.py` in the main directory.
+5. Start the React application by running `npm start` in the `frontend` directory.
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Please note that the Flask server must be running in order for the React app to function properly.
