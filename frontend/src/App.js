@@ -1,3 +1,5 @@
+import DOMPurify from "dompurify";
+import { marked } from "marked";
 import { useState } from "react";
 import "./App.css";
 
@@ -8,16 +10,17 @@ function App() {
   const models = ["gpt-3.5-turbo", "gpt-4", "gpt-4o", "gpt-4-turbo"];
 
   const handleSubmit = async () => {
-    setResponses([
-      ...responses,
-      {
-        prompt: prompt,
-        response: "",
-        timestamp: new Date().toLocaleString(),
-      },
-    ]);
+    const newResponse = {
+      prompt: prompt,
+      response: "",
+      timestamp: new Date().toLocaleString(),
+      model: selectedModel,
+      tokenCount: 0,
+    };
+    setResponses([...responses, newResponse]);
     const url = "http://127.0.0.1:5000/api/prompt";
-    var tmpPromptResponse = "";
+    let tmpPromptResponse = "";
+    let tokenCount = 0;
     try {
       const response = await fetch(url, {
         method: "POST",
@@ -31,28 +34,48 @@ function App() {
       });
 
       // eslint-disable-next-line no-undef
-      let decoder = new TextDecoderStream();
+      const decoder = new TextDecoderStream();
       if (!response.body) return;
       const reader = response.body.pipeThrough(decoder).getReader();
 
-      while (true) {
-        var { value, done } = await reader.read();
+      const processChunk = (value) => {
+        if (value.includes("token_count")) {
+          tokenCount = parseInt(value.split(":")[1].trim());
+        } else {
+          tmpPromptResponse += value;
+          setResponses((prevResponses) =>
+            prevResponses.map((resp, index) =>
+              index === prevResponses.length - 1
+                ? {
+                    ...resp,
+                    response: tmpPromptResponse,
+                  }
+                : resp
+            )
+          );
+        }
+      };
 
+      while (true) {
+        const { value, done } = await reader.read();
         if (done) {
           break;
         } else {
-          tmpPromptResponse += value;
-          setResponses([
-            ...responses,
-            {
-              prompt: prompt,
-              response: tmpPromptResponse,
-              timestamp: new Date().toLocaleString(),
-              model: selectedModel,
-            },
-          ]);
+          processChunk(value);
         }
       }
+
+      // After the loop, update the state with the final token count
+      setResponses((prevResponses) =>
+        prevResponses.map((resp, index) =>
+          index === prevResponses.length - 1
+            ? {
+                ...resp,
+                tokenCount: tokenCount,
+              }
+            : resp
+        )
+      );
     } catch (error) {
       console.error(error);
     }
@@ -63,16 +86,22 @@ function App() {
     setResponses([]);
   };
 
+  const sanitizeAndConvertMarkdown = (markdown) => {
+    const rawHtml = marked(markdown);
+    const sanitizedHtml = DOMPurify.sanitize(rawHtml);
+    const formattedHtml = `<strong style="color: white;">Answer: </strong>${sanitizedHtml}`;
+    return formattedHtml;
+  };
+
   return (
     <div
       style={{
         display: "flex",
         flexDirection: "row",
         justifyContent: "center",
-        margin: "1rem",
       }}
     >
-      <div style={{ width: "80vh" }}>
+      <div style={{ width: "75vw" }}>
         <div style={{ display: "flex", flexDirection: "column" }}>
           <h2>Chat with GPT</h2>
           <textarea
@@ -114,16 +143,22 @@ function App() {
                       <strong>Model: </strong>
                       {response.model}
                     </p>
+                    <p>
+                      <strong>Response Tokens: </strong>
+                      {response.tokenCount}
+                    </p>
                     <p className="medium-text">
-                      <strong>Q: </strong>
+                      <strong>Prompt: </strong>
                       {response.prompt.length > 300
                         ? response.prompt.substring(0, 300) + "..."
                         : response.prompt}
                     </p>
-                    <p className="medium-text">
-                      <strong>A: </strong>
-                      {response.response}
-                    </p>
+                    <div
+                      className="medium-text"
+                      dangerouslySetInnerHTML={{
+                        __html: sanitizeAndConvertMarkdown(response.response),
+                      }}
+                    ></div>
                   </div>
                 </div>
               ))}
